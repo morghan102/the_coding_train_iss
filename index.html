@@ -38,14 +38,25 @@
 
 
     <script>
+        var myIcon = L.icon({
+            iconUrl: 'img.png',
+            iconSize: [38, 50],
+            iconAnchor: [25, 16],
+            // popupAnchor: [-3, -76],
+            // shadowUrl: 'my-icon-shadow.png',
+            // shadowSize: [68, 95],
+            // shadowAnchor: [22, 94]
+        });        
+        
         const mymap = L.map('mapid').setView([0, 0], 1); //those #s are the lat and long of where it loads and zoom level
-        const marker = L.marker([0, 0]).addTo(mymap);
+        const marker = L.marker([0, 0], {icon: myIcon}).addTo(mymap);
 
         const tile_url = `http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`//this automatically pulls the tile for any particular one using the x, y, zoom, using the style
         const tiles = L.tileLayer(tile_url); //creates the tiles that populate the map. also needs attributipn for the copyright
         tiles.addTo(mymap) //adds tiles to map
 
         const api_url = 'https://api.wheretheiss.at/v1/satellites/25544'
+
 
         async function getISS() {
             const response = await fetch(api_url);
