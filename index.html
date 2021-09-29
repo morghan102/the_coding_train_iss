@@ -22,7 +22,7 @@
 
     <style>
         #mapid {
-            height: 180px;
+            height: 510px;
             width: 550px;
         }
     </style>
@@ -38,11 +38,13 @@
 
 
     <script>
-        const mymap = L.map('mapid').setView([0,0], 1); //those #s are the lat and long of where it loads and zoom level
+        const mymap = L.map('mapid').setView([0, 0], 1); //those #s are the lat and long of where it loads and zoom level
+        const marker = L.marker([0, 0]).addTo(mymap);
 
         const tile_url = `http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`//this automatically pulls the tile for any particular one using the x, y, zoom, using the style
         const tiles = L.tileLayer(tile_url); //creates the tiles that populate the map. also needs attributipn for the copyright
         tiles.addTo(mymap) //adds tiles to map
+
         const api_url = 'https://api.wheretheiss.at/v1/satellites/25544'
 
         async function getISS() {
@@ -52,6 +54,8 @@
 
             document.getElementById('lat').textContent = latitude;
             document.getElementById('lon').textContent = longitude;
+
+            marker.setLanLng([latitude, longitude])//not just setting the l.marker.addto(mymap) here allows the page to refresh instead of just being in the same spot 
 
             console.log(data)
         }
