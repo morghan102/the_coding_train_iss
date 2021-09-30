@@ -31,13 +31,23 @@
 <body>
     <h1>Where the iss at?</h1>
     <p> latitude: <span id="lat"></span></br>
-        longitude: <span id="lon"></span>
+        longitude: <span id="lon"></span></br>
     </p>
 
     <div id="mapid"></div>
 
 
     <script>
+        // making map and tiles to fill it in
+        const mymap = L.map('mapid').setView([0, 0], 6); //those #s are the lat and long of where it loads and zoom level
+        const tile_url = `http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`//this automatically pulls the tile for any particular one using the x, y, zoom, using the style
+        
+        const attribution =
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+        const tiles = L.tileLayer(tile_url, { attribution }); //creates the tiles that populate the map. also needs attributipn for the copyright
+        tiles.addTo(mymap) //adds tiles to map
+        
+        // making marker w custom icon
         var myIcon = L.icon({
             iconUrl: 'img.png',
             iconSize: [38, 50],
@@ -47,35 +57,30 @@
             // shadowSize: [68, 95],
             // shadowAnchor: [22, 94]
         });        
-        
-        const mymap = L.map('mapid').setView([0, 0], 1); //those #s are the lat and long of where it loads and zoom level
         const marker = L.marker([0, 0], {icon: myIcon}).addTo(mymap);
 
-        const tile_url = `http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`//this automatically pulls the tile for any particular one using the x, y, zoom, using the style
-        const tiles = L.tileLayer(tile_url); //creates the tiles that populate the map. also needs attributipn for the copyright
-        tiles.addTo(mymap) //adds tiles to map
 
-        const api_url = 'https://api.wheretheiss.at/v1/satellites/25544'
-
+        const api_url = 'https://api.wheretheiss.at/v1/satellites/25544';
 
         async function getISS() {
             const response = await fetch(api_url);
             const data = await response.json(); //convert that res to json 
             const { latitude, longitude } = data;
 
+            mymap.setView([latitude, longitude], mymap.getZoom());
+            marker.setLatLng([latitude, longitude])//not just setting the l.marker.addto(mymap) here allows the page to refresh instead of just being in the same spot 
+
             document.getElementById('lat').textContent = latitude;
             document.getElementById('lon').textContent = longitude;
-
-            marker.setLanLng([latitude, longitude])//not just setting the l.marker.addto(mymap) here allows the page to refresh instead of just being in the same spot 
-
             console.log(data)
         }
 
         function refresh() {
             window.location.reload()
         }
-        getISS();
-        window.setInterval('refresh()', 10000)
+        getISS(); //with the setinterval, still need this 1st call
+        // window.setInterval('refresh()', 10000) this makes the whole page refresh
+        setInterval(getISS, 1000)// or this way where it just reruns the funct every time i want
     </script>
 </body>
 
